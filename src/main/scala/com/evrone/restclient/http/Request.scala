@@ -1,6 +1,6 @@
 package com.evrone.restclient.http
 
-case class Request(client:      com.evrone.restclient.RestClient,
+case class Request(client:      RestClient,
                    method:      String,
                    url:         String,
                    query:       Map[String,String] = Map(),
@@ -24,6 +24,13 @@ case class Request(client:      com.evrone.restclient.RestClient,
 
   def withHeader(k: String, v: String): Request = {
     copy(headers = headers ++ Map(k -> v))
+  }
+
+  def withAccept(k: Option[String]): Request = {
+    k match {
+      case Some(a) => withHeader("Accept", a)
+      case None    => this
+    }
   }
 
   def withParams(x: Hash): Request = copy(params = params ++ x)

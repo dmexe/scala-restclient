@@ -6,10 +6,10 @@ package object restclient {
   import org.apache.http.protocol.BasicHttpContext
 
   implicit def request2asBody(req: http.Request) = new {
-    import http.Response._
+    import Response._
 
     def as[T](implicit deserializer: Deserializer[T]): Either[String,T] = {
-      val httpReq = http.Builder(req)
+      val httpReq = http.Builder(req.withAccept(deserializer.contentType))
       val maybeHttpRes = http.Executor.getResponse(req.client, httpReq)
       maybeHttpRes.right.flatMap { body =>
         deserializer(body) match {
