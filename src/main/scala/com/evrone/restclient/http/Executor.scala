@@ -22,5 +22,5 @@ object Executor {
     }
   }
 
-  private def log(s:Any) = println(s)
+  private def log(s:Any) = true // println(s)
 }

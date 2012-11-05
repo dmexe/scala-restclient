@@ -31,11 +31,11 @@ class RequestSpec extends FunSpec {
   }
 
   it("add params from Map") {
-    req.withParams(map).params should be (map)
+    req.withParam(map).params should be (map)
   }
 
   it("add params from couple of string") {
-    req.withParams(map.head._1, map.head._2).params should be (map)
+    req.withParam(map.head._1, map.head._2).params should be (map)
   }
 
   it("setup BasicAuth") {

@@ -44,7 +44,7 @@ object Response {
 
   trait XmlElemDeserializer extends Deserializer[xml.Elem] {
 
-    override def contentType = Some("application/json")
+    override def contentType = Some("application/xml")
 
     def apply(resp: HttpResponse): Option[xml.Elem] = {
       getBodyString(resp) { body =>

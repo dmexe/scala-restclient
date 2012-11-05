@@ -32,7 +32,7 @@ trait RequestBehaviors { this: FunSpec =>
 
   def formParams(http: Request =>  HttpEntityEnclosingRequest, req: Request) {
     it("assign form params") {
-      val q = req.withParams("name", "value")
+      val q = req.withParam("name", "value")
       val e = http(q).getEntity
 
       EntityUtils.toString(e) should be ("name=value")

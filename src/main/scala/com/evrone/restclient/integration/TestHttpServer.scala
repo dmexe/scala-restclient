@@ -8,6 +8,7 @@ import scala.collection.JavaConversions._
 
 case class HandleRequest(method:        Option[List[String]]          = None,
                          headers:       Option[Map[String,String]]    = None,
+                         params:        Option[String]                = None,
                          dataAsString:  Option[String]                = None,
                          queryString:   Option[String]                = None,
                          basicAuth:     Option[Tuple2[String,String]] = None) {
@@ -15,7 +16,7 @@ case class HandleRequest(method:        Option[List[String]]          = None,
   def withMethod(x: String)               = copy(method       = Some(List(x)))
   def withHeader(x: Map[String,String])   = copy(headers      = Some(x))
   def withHeader(n: String, v :String)    = copy(headers      = Some(Map(n -> v)))
-  def withData(x: String)                 = copy(dataAsString = Some(x))
+  def withParam(x: String)                = copy(params       = Some(x))
   def withQueryString(x :String)          = copy(queryString  = Some(x))
   def withBasicAuth(u :String, p :String) = copy(basicAuth    = Some(Tuple2(u,p)))
 }
@@ -112,11 +113,11 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
   private def reqQueryString(x:HttpExchange): Either[String,Int] = {
     req.queryString match {
       case Some(d) => {
-        val body = getBodyString(x)
-        if(body == d) {
+        val query = x.getRequestURI().getQuery()
+        if(query == d) {
           Right(0)
         } else {
-          Left("Invalid body: expected [" + d + "] got [" + body + "]")
+          Left("Invalid body: expected [" + d + "] got [" + query + "]")
         }
       }
       case _ => Right(0)
@@ -140,7 +141,7 @@ class TestHttpBasicAuthenticator(val name:String, val pass:String) extends Basic
 class TestHttpServer {
   val server = HttpServer.create(new InetSocketAddress(0), 0)
 
-  def handle(url:String)(f: (HandleRequest,HandleResponse) => (HandleRequest, HandleResponse) ) = {
+  def handle(url:String)(f: Tuple2[HandleRequest,HandleResponse] => (HandleRequest, HandleResponse) ) = {
     val reqAndRes = f(new HandleRequest, new HandleResponse)
 
     var context = server.createContext(url, new TestHttpHandler(reqAndRes._1, reqAndRes._2))

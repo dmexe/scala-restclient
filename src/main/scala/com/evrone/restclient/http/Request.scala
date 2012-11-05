@@ -33,9 +33,9 @@ case class Request(client:      RestClient,
     }
   }
 
-  def withParams(x: Hash): Request = copy(params = params ++ x)
+  def withParam(x: Hash): Request = copy(params = params ++ x)
 
-  def withParams(k: String, v: String): Request = {
+  def withParam(k: String, v: String): Request = {
     copy(params = params ++ Map(k -> v))
   }
 
