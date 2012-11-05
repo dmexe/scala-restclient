@@ -1,4 +1,4 @@
-package com.evrone.restclient
+package com.evrone.restclient.deserializer
 
 import org.apache.http.util.EntityUtils
 import org.apache.http.{HttpEntity,HttpVersion,HttpStatus}
@@ -7,7 +7,9 @@ import org.apache.http.entity.{StringEntity,ContentType,ByteArrayEntity}
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 
-class ResponseSpec extends FunSpec {
+class RestDeserializerSpec extends FunSpec {
+  import RestDeserializer._
+
   describe("as") {
 
     def withResponse(test: BasicHttpResponse => Any) {
@@ -28,7 +30,7 @@ class ResponseSpec extends FunSpec {
           val respWithEntity = responseWithStringEntity(resp, "response body")
 
           it("return Option[String] with body") {
-            Response.StringResponse(respWithEntity) should be (Some("response body"))
+            ToStringDeserializer(respWithEntity) should be (Some("response body"))
           }
         }
       }
@@ -36,7 +38,7 @@ class ResponseSpec extends FunSpec {
       describe("when fail") {
         withResponse { resp =>
           it("return None") {
-            Response.StringResponse(resp) should be (None)
+            ToStringDeserializer(resp) should be (None)
           }
         }
       }
@@ -50,7 +52,7 @@ class ResponseSpec extends FunSpec {
           val respWithEntity = responseWithStringEntity(resp, x)
 
           it("return Option[xml.Elem] with body") {
-            Response.XmlElemResponse(respWithEntity) should be (Some(xml.XML.loadString(x)))
+            ToXmlElemDeserializer(respWithEntity) should be (Some(xml.XML.loadString(x)))
           }
         }
       }
@@ -59,11 +61,11 @@ class ResponseSpec extends FunSpec {
         withResponse { resp =>
           it("catch not xml") {
             val respWithEntity = responseWithStringEntity(resp, """{"a":"1"}""")
-            Response.XmlElemResponse(resp) should be (None)
+            ToXmlElemDeserializer(resp) should be (None)
           }
           it("catch bad xml") {
             val respWithEntity = responseWithStringEntity(resp, "<a>1<a>")
-            Response.XmlElemResponse(resp) should be (None)
+            ToXmlElemDeserializer(resp) should be (None)
           }
         }
       }
@@ -78,7 +80,7 @@ class ResponseSpec extends FunSpec {
           resp.setEntity(entity)
 
           it("return Option[Array[Byte]] with body") {
-            val respBytes = Response.ByteArrayResponse(resp).get
+            val respBytes = ToByteArrayDeserializer(resp).get
             assert(java.util.Arrays.equals(respBytes, bytes), true)
           }
         }
@@ -87,7 +89,7 @@ class ResponseSpec extends FunSpec {
       describe("when fail") {
         withResponse { resp =>
           it("return None") {
-            Response.ByteArrayResponse(resp) should be (None)
+            ToByteArrayDeserializer(resp) should be (None)
           }
         }
       }

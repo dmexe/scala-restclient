@@ -3,4 +3,6 @@ scala-restclient
 
 [![Build Status](https://secure.travis-ci.org/dima-exe/scala-restclient.png)](http://travis-ci.org/dima-exe/scala-restclient)
 
-Simple http rest client for scala, uses apache http client 4.
+Simple http rest client for scala, uses apache http client 4.x
+
+Under development.

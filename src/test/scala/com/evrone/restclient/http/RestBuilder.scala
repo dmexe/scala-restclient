@@ -7,10 +7,10 @@ import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 import org.apache.http.auth.AuthScope
 
-trait RequestBehaviors { this: FunSpec =>
+trait RestRequestBehaviors { this: FunSpec =>
   val client = new com.evrone.restclient.RestClient()
 
-  def queryString(http: Request => HttpRequestBase, req: Request) {
+  def queryString(http: RestRequest => HttpRequestBase, req: RestRequest) {
     it("assign queryString") {
       val q = req.withQuery("a=1")
       http(q).getURI.toASCIIString should be ("http://example.com?a=1")
@@ -19,7 +19,7 @@ trait RequestBehaviors { this: FunSpec =>
     }
   }
 
-  def postData(http: Request =>  HttpEntityEnclosingRequest, req: Request) {
+  def postData(http: RestRequest =>  HttpEntityEnclosingRequest, req: RestRequest) {
     it("assign postData") {
       val e = http(req).getEntity
       EntityUtils.toString(e) should be ("data")
@@ -30,7 +30,7 @@ trait RequestBehaviors { this: FunSpec =>
     }
   }
 
-  def formParams(http: Request =>  HttpEntityEnclosingRequest, req: Request) {
+  def formParams(http: RestRequest =>  HttpEntityEnclosingRequest, req: RestRequest) {
     it("assign form params") {
       val q = req.withParam("name", "value")
       val e = http(q).getEntity
@@ -44,21 +44,21 @@ trait RequestBehaviors { this: FunSpec =>
   }
 }
 
-class BuilderSpec extends FunSpec with RequestBehaviors {
+class RestBuilderSpec extends FunSpec with RestRequestBehaviors {
 
-  val req = Request(client, "GET", "http://example.com")
+  val req = RestRequest(client, "GET", "http://example.com")
 
   describe(".prepare") {
 
     it("assign request headers") {
       val q = req.withHeader("name", "value")
-      val header = Builder(q).getFirstHeader("name")
+      val header = RestBuilder(q).getFirstHeader("name")
       header.getValue() should be ("value")
     }
 
     it("assign basic auth") {
       val q = req.withBasicAuth("user", "pass")
-      Builder(q)
+      RestBuilder(q)
       val provider = req.client.httpClient.getCredentialsProvider()
       val cred = provider.getCredentials(AuthScope.ANY)
       cred.getUserPrincipal.getName should be ("user")
@@ -69,7 +69,7 @@ class BuilderSpec extends FunSpec with RequestBehaviors {
   }
 
   describe(".GET") {
-    val get = Builder.GET(_)
+    val get = RestBuilder.GET(_)
 
     it("build a HttpGet request") {
       get(req).isInstanceOf[HttpGet] should be (true)
@@ -79,7 +79,7 @@ class BuilderSpec extends FunSpec with RequestBehaviors {
   }
 
   describe(".HEAD") {
-    val head = Builder.HEAD(_)
+    val head = RestBuilder.HEAD(_)
 
     it("build a HttpHead request") {
       head(req).isInstanceOf[HttpHead] should be (true)
@@ -90,7 +90,7 @@ class BuilderSpec extends FunSpec with RequestBehaviors {
 
   describe(".POST") {
     val q = req.withData("data", "contentType")
-    val post = Builder.POST(_)
+    val post = RestBuilder.POST(_)
 
     it("build a HttpPost request") {
       post(q).isInstanceOf[HttpPost] should be (true)
@@ -103,7 +103,7 @@ class BuilderSpec extends FunSpec with RequestBehaviors {
 
   describe(".PUT") {
     val q = req.withData("data", "contentType").withMethod("PUT")
-    val put = Builder.POST(_)
+    val put = RestBuilder.POST(_)
 
     it("build a HttpPost request") {
       put(q).isInstanceOf[HttpPost] should be (true)

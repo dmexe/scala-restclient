@@ -4,7 +4,7 @@ import org.apache.http.client.methods.{HttpGet,HttpHead,HttpPost,HttpRequestBase
 import org.apache.http.HttpResponse
 import java.io.IOException
 
-object Executor {
+object RestExecutor {
   def getResponse(client: RestClient, httpReq: HttpRequestBase): Either[String,HttpResponse] = {
     log(httpReq.getRequestLine())
     val http  = client.httpClient

@@ -9,13 +9,13 @@ class RestClientSpec extends FunSpec {
 
   describe(".get") {
     it("build a new Request") {
-      client.get("http://example.com").isInstanceOf[http.Request] should be (true)
+      client.get("http://example.com").isInstanceOf[http.RestRequest] should be (true)
     }
   }
 
   describe(".post") {
     it("build a new Request") {
-      client.post("http://example.com").isInstanceOf[http.Request] should be (true)
+      client.post("http://example.com").isInstanceOf[http.RestRequest] should be (true)
     }
   }
 }

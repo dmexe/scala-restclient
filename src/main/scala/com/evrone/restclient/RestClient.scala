@@ -5,21 +5,6 @@ package object restclient {
   import org.apache.http.impl.conn.PoolingClientConnectionManager
   import org.apache.http.protocol.BasicHttpContext
 
-  implicit def request2asBody(req: http.Request) = new {
-    import Response._
-
-    def as[T](implicit deserializer: Deserializer[T]): Either[String,T] = {
-      val httpReq = http.Builder(req.withAccept(deserializer.contentType))
-      val maybeHttpRes = http.Executor.getResponse(req.client, httpReq)
-      maybeHttpRes.right.flatMap { body =>
-        deserializer(body) match {
-          case Some(x) => Right(x)
-          case None    => Left("Fail to process response")
-        }
-      }
-    }
-  }
-
   class RestClient {
     val httpClient  = new DefaultHttpClient(RestClient.connManager)
     val httpContext = new BasicHttpContext()
@@ -31,8 +16,8 @@ package object restclient {
     def patch (url: String) = build("PATCH",  url)
     def delete(url: String) = build("DELETE", url)
 
-    private def build(method: String, url: String): http.Request = {
-      http.Request(this, method, url)
+    private def build(method: String, url: String): http.RestRequest = {
+      http.RestRequest(this, method, url)
     }
   }
 
@@ -44,5 +29,19 @@ package object restclient {
     def stats = connManager.getTotalStats().toString()
   }
 
+  implicit def request2asBody(req: http.RestRequest) = new {
+    import deserializer.RestDeserializer._
+
+    def as[T](implicit deserializer: AbstractDeserializer[T]): Either[String,T] = {
+      val httpReq = http.RestBuilder(req.withAccept(deserializer.contentType))
+      val maybeHttpRes = http.RestExecutor.getResponse(req.client, httpReq)
+      maybeHttpRes.right.flatMap { body =>
+        deserializer(body) match {
+          case Some(x) => Right(x)
+          case None    => Left("Fail to process response")
+        }
+      }
+    }
+  }
 }
 

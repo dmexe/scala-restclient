@@ -10,9 +10,9 @@ import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.util.EntityUtils
 import scala.collection.JavaConversions._
 
-object Builder {
+object RestBuilder {
 
-  def apply(req: Request) = {
+  def apply(req: RestRequest) = {
     val httpReq = req.method match {
       case "GET"  => GET(req)
       case "HEAD" => HEAD(req)
@@ -29,10 +29,10 @@ object Builder {
     httpReq
   }
 
-  def GET (req: Request) = new HttpGet(uri(req))
-  def HEAD(req: Request) = new HttpHead(uri(req))
+  def GET (req: RestRequest) = new HttpGet(uri(req))
+  def HEAD(req: RestRequest) = new HttpHead(uri(req))
 
-  def POST(req: Request) = {
+  def POST(req: RestRequest) = {
     val post = new HttpPost(uri(req)) {
       override def getMethod() = req.method
     }
@@ -52,7 +52,7 @@ object Builder {
     post
   }
 
-  private def uri(req: Request): URI = {
+  private def uri(req: RestRequest): URI = {
     val uriBuilder = new URIBuilder(req.url)
     for(q <- req.queryString) uriBuilder.setQuery(q)
     for((k,v) <- req.query) uriBuilder.addParameter(k,v)

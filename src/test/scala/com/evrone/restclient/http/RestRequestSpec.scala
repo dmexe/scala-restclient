@@ -3,10 +3,10 @@ package com.evrone.restclient.http
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 
-class RequestSpec extends FunSpec {
+class RestRequestSpec extends FunSpec {
 
-  val client = new com.evrone.restclient.RestClient()
-  val req = Request(client, "GET", "http://example.com")
+  val client = new RestClient()
+  val req = RestRequest(client, "GET", "http://example.com")
   val map = Map("name" -> "value")
 
   it("add a query from Map") {
