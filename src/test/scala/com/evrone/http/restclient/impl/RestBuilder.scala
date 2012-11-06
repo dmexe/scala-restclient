@@ -1,5 +1,6 @@
-package com.evrone.restclient.http
+package com.evrone.http.restclient.impl
 
+import com.evrone.http.RestClient
 import org.apache.http.client.methods.{HttpGet,HttpHead,HttpPost,HttpRequestBase}
 import org.apache.http.HttpEntityEnclosingRequest
 import org.apache.http.util.EntityUtils
@@ -8,7 +9,7 @@ import org.scalatest.matchers.ShouldMatchers._
 import org.apache.http.auth.AuthScope
 
 trait RestRequestBehaviors { this: FunSpec =>
-  val client = new com.evrone.restclient.RestClient()
+  val client = new RestClient
 
   def queryString(http: RestRequest => HttpRequestBase, req: RestRequest) {
     it("assign queryString") {

@@ -1,4 +1,4 @@
-package com.evrone.restclient.response
+package com.evrone.http.restclient.response
 
 import org.apache.http.HttpResponse
 

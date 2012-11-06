@@ -1,4 +1,4 @@
-package com.evrone.restclient.response
+package com.evrone.http.restclient.response
 
 import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper,JsonMappingException}

@@ -1,11 +1,11 @@
-package com.evrone.restclient.http
+package com.evrone.http.restclient.impl
 
 import org.apache.http.client.methods.{HttpGet,HttpHead,HttpPost,HttpRequestBase,HttpEntityEnclosingRequestBase}
 import org.apache.http.HttpResponse
 import java.io.IOException
 
 object RestExecutor {
-  def getResponse(client: RestClient, httpReq: HttpRequestBase): Either[String,HttpResponse] = {
+  def getResponse(client: com.evrone.http.RestClient, httpReq: HttpRequestBase): Either[String,HttpResponse] = {
     log(httpReq.getRequestLine())
     val http  = client.httpClient
 

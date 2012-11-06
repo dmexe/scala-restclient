@@ -1,4 +1,4 @@
-package com.evrone.restclient.integration
+package com.evrone.http.integration
 
 import com.sun.net.httpserver.{HttpExchange,HttpHandler,HttpServer,BasicAuthenticator}
 import java.io.OutputStream

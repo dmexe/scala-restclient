@@ -1,3 +1,4 @@
+/*
 package com.evrone.restclient.deserializer
 
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
@@ -125,3 +126,4 @@ class RestDeserializerSpec extends FunSpec {
     }
   }
 }
+*/

@@ -1,4 +1,4 @@
-package com.evrone.restclient
+package com.evrone.http
 
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import org.scalatest._

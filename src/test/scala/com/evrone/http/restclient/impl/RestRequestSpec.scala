@@ -1,5 +1,6 @@
-package com.evrone.restclient.http
+package com.evrone.http.restclient.impl
 
+import com.evrone.http.RestClient
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 

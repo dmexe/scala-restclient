@@ -1,4 +1,4 @@
-package com.evrone.restclient.response
+package com.evrone.http.restclient.response
 
 trait RestResponseAsXml extends RestResponseBuilder {
   def asXml: Option[xml.Elem] = {

@@ -1,6 +1,6 @@
-package com.evrone.restclient.http
+package com.evrone.http.restclient.impl
 
-import com.evrone.restclient.response.RestResponseBuilder
+import com.evrone.http.restclient.response.RestResponseBuilder
 import org.apache.http.HttpResponse
 
 trait RestRequestAndThen { self: RestRequest =>
@@ -24,7 +24,7 @@ trait RestRequestAndThen { self: RestRequest =>
   }
 }
 
-case class RestRequest(client:      RestClient,
+case class RestRequest(client:      com.evrone.http.RestClient,
                        method:      String,
                        url:         String,
                        query:       Map[String,String] = Map(),

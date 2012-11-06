@@ -1,4 +1,4 @@
-package com.evrone.restclient.http
+package com.evrone.http.restclient.impl
 
 import java.net.URI
 import org.apache.http.auth.{AuthScope,UsernamePasswordCredentials}

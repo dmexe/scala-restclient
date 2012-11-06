@@ -1,4 +1,4 @@
-package com.evrone.restclient.response
+package com.evrone.http.restclient.response
 
 import org.json4s._
 import org.json4s.jackson.JsonMethods._
