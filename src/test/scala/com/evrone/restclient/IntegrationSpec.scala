@@ -1,7 +1,9 @@
 package com.evrone.restclient
 
+import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
+
 
 class IntegrationSpec extends FunSpec {
 
@@ -12,11 +14,12 @@ class IntegrationSpec extends FunSpec {
     server.stop()
   }
 
-  describe("make a PUT request") {
+  describe("make a json PUT request") {
     val client = new RestClient
 
     it("a successfuly") {
-      val x = "<a>1</a>"
+      val x = """{"a":1,"b":"2"}"""
+      val mapper = new ObjectMapper
 
       withServer{ srv =>
         srv.handle("/echo") { case (req,res) =>
@@ -29,16 +32,17 @@ class IntegrationSpec extends FunSpec {
               .withData(x))
         }
 
-        expectResult(Right(xml.XML.loadString(x))) {
+        expectResult(Option(mapper.readTree(x))) {
           client.put("http://" + srv.address + "/echo")
                 .withParam("foo","bar")
-                .withBasicAuth("user", "pass").as[xml.Elem]
+                .withAccept("application/xml")
+                .withBasicAuth("user", "pass").andThen.asJsonNode
         }
       }
     }
   }
 
-  describe("make a GET request") {
+  describe("make a xml GET request") {
     val client = new RestClient
 
     it("a successfuly") {
@@ -55,10 +59,11 @@ class IntegrationSpec extends FunSpec {
               .withData(x))
         }
 
-        expectResult(Right(xml.XML.loadString(x))) {
+        expectResult(Some(xml.XML.loadString(x))) {
           client.get("http://" + srv.address + "/echo")
                 .withQuery("foo", "bar")
-                .withBasicAuth("user", "pass").as[xml.Elem]
+                .withAccept("application/xml")
+                .withBasicAuth("user", "pass").andThen.asXml
         }
       }
     }
@@ -73,8 +78,8 @@ class IntegrationSpec extends FunSpec {
                 .withData(""))
           }
 
-          expectResult(Left("Fail to process response")) {
-            client.get("http://" + srv.address + "/echo").as[xml.Elem]
+          expectResult(None) {
+            client.get("http://" + srv.address + "/echo").andThen.asXml
           }
         }
       }
@@ -87,8 +92,8 @@ class IntegrationSpec extends FunSpec {
              res)
           }
 
-          expectResult(Left("HTTP/1.1 401 Unauthorized")) {
-            client.get("http://" + srv.address + "/echo").as[xml.Elem]
+          expectResult(None) {
+            client.get("http://" + srv.address + "/echo").andThen.asXml
           }
         }
       }
@@ -101,8 +106,8 @@ class IntegrationSpec extends FunSpec {
                 .withData(""))
           }
 
-          expectResult(Left("HTTP/1.1 404 Not Found")) {
-            client.get("http://" + srv.address + "/not.found").as[xml.Elem]
+          expectResult(None) {
+            client.get("http://" + srv.address + "/not.found").andThen.asXml
           }
         }
       }

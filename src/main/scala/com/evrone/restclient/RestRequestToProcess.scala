@@ -4,7 +4,7 @@ case class RestRequestToProcess(req: http.RestRequest) {
   import deserializer.RestDeserializer._
 
   def as[T](implicit deserializer: AbstractDeserializer[T]): Either[String,T] = {
-    val httpReq = http.RestBuilder(req.withAccept(deserializer.contentType))
+    val httpReq = http.RestBuilder(req)
     val maybeHttpRes = http.RestExecutor.getResponse(req.client, httpReq)
 
     maybeHttpRes.right.flatMap { body =>
