@@ -29,19 +29,6 @@ package object restclient {
     def stats = connManager.getTotalStats().toString()
   }
 
-  implicit def request2asBody(req: http.RestRequest) = new {
-    import deserializer.RestDeserializer._
+  implicit def request2process(req: http.RestRequest) = RestRequestToProcess(req)
 
-    def as[T](implicit deserializer: AbstractDeserializer[T]): Either[String,T] = {
-      val httpReq = http.RestBuilder(req.withAccept(deserializer.contentType))
-      val maybeHttpRes = http.RestExecutor.getResponse(req.client, httpReq)
-      maybeHttpRes.right.flatMap { body =>
-        deserializer(body) match {
-          case Some(x) => Right(x)
-          case None    => Left("Fail to process response")
-        }
-      }
-    }
-  }
 }
-

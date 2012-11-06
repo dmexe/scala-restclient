@@ -1,5 +1,7 @@
 package com.evrone.restclient.deserializer
 
+import com.fasterxml.jackson.core.JsonParseException
+import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper,JsonMappingException}
 import org.apache.http.util.EntityUtils
 import org.apache.http.{HttpEntity,HttpResponse}
 
@@ -57,7 +59,26 @@ object RestDeserializer {
     }
   }
 
+  trait ToJsonNode extends AbstractDeserializer[JsonNode] {
+
+    lazy val mapper = new ObjectMapper
+
+    override def contentType = Some("application/json")
+
+    def apply(resp: HttpResponse): Option[JsonNode] = {
+      getBodyString(resp) { body =>
+        try {
+          Some(ToJsonNodeDeserializer.mapper.readTree(body))
+        } catch {
+          case e:JsonMappingException => None
+          case e:JsonParseException => None
+        }
+      }
+    }
+  }
+
   implicit object ToStringDeserializer extends ToString
   implicit object ToByteArrayDeserializer  extends ToByteArray
   implicit object ToXmlElemDeserializer extends ToXmlElem
+  implicit object ToJsonNodeDeserializer extends ToJsonNode
 }
