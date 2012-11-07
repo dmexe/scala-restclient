@@ -5,9 +5,17 @@ import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.impl.conn.PoolingClientConnectionManager
 import org.apache.http.protocol.BasicHttpContext
 
-class RestClient {
-  val httpClient  = new DefaultHttpClient(RestClient.connManager)
-  val httpContext = new BasicHttpContext()
+case class RestClient(httpClient:  DefaultHttpClient = RestClient.defaultHttpClient,
+                      httpContext: BasicHttpContext  = RestClient.defaultHttpContext,
+                      log:         (String => Any)   = RestClient.defaultLogger) {
+
+  def this(log: String => Any) = {
+    this(RestClient.defaultHttpClient, RestClient.defaultHttpContext, log)
+  }
+
+  def this(httpClient: DefaultHttpClient) = {
+    this(httpClient, RestClient.defaultHttpContext, RestClient.defaultLogger)
+  }
 
   def get   (url: String) = build("GET",    url)
   def post  (url: String) = build("POST",   url)
@@ -22,9 +30,13 @@ class RestClient {
 }
 
 object RestClient {
-  lazy val connManager = new PoolingClientConnectionManager()
+  lazy val connManager                   = new PoolingClientConnectionManager()
 
   def close() = connManager.shutdown()
 
   def stats = connManager.getTotalStats().toString()
+
+  def defaultLogger(s:String) {}
+  def defaultHttpClient = new DefaultHttpClient(connManager)
+  def defaultHttpContext = new BasicHttpContext()
 }

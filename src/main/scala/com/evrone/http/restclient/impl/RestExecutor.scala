@@ -7,12 +7,12 @@ import com.twitter.util.{Try,Throw}
 
 object RestExecutor {
   def getResponse(client: com.evrone.http.RestClient, httpReq: HttpRequestBase): Try[HttpResponse] = {
-    log(httpReq.getRequestLine())
+    client.log(httpReq.getRequestLine().toString)
     val http  = client.httpClient
 
     Try {
       val httpRes = http.execute(httpReq, client.httpContext)
-      log(httpRes.getStatusLine())
+      client.log(httpRes.getStatusLine().toString)
 
       httpRes.getStatusLine().getStatusCode() match {
         case ok if 200 until 299 contains ok => httpRes
@@ -20,8 +20,6 @@ object RestExecutor {
       }
     }
   }
-
-  private def log(s:Any) = true // println(s)
 }
 
 case class UnexpectedResponse(msg: String) extends Exception(msg)
