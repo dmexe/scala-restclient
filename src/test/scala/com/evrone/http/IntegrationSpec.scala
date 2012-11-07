@@ -1,5 +1,6 @@
 package com.evrone.http
 
+import com.twitter.util.{Try,Return,Throw}
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
@@ -32,7 +33,7 @@ class IntegrationSpec extends FunSpec {
               .withData(x))
         }
 
-        expectResult(Option(mapper.readTree(x))) {
+        expectResult(Return(mapper.readTree(x))) {
           client.put("http://" + srv.address + "/echo")
                 .withParam("foo","bar")
                 .withAccept("application/xml")
@@ -59,7 +60,7 @@ class IntegrationSpec extends FunSpec {
               .withData(x))
         }
 
-        expectResult(Some(xml.XML.loadString(x))) {
+        expectResult(Return(xml.XML.loadString(x))) {
           client.get("http://" + srv.address + "/echo")
                 .withQuery("foo", "bar")
                 .withAccept("application/xml")
@@ -78,9 +79,8 @@ class IntegrationSpec extends FunSpec {
                 .withData(""))
           }
 
-          expectResult(None) {
-            client.get("http://" + srv.address + "/echo").andThen.asXml
-          }
+          val e = "Throw(com.evrone.http.restclient.response.HttpEntityDoesNotExists: HttpEntity does not exists)"
+          client.get("http://" + srv.address + "/echo").andThen.asXml.toString should be (e)
         }
       }
 
@@ -91,10 +91,8 @@ class IntegrationSpec extends FunSpec {
                 .withBasicAuth("u", "p"),
              res)
           }
-
-          expectResult(None) {
-            client.get("http://" + srv.address + "/echo").andThen.asXml
-          }
+          val e = "Throw(com.evrone.http.restclient.impl.UnexpectedResponse: HTTP/1.1 401 Unauthorized)"
+          client.get("http://" + srv.address + "/echo").andThen.asXml.toString should be (e)
         }
       }
 
@@ -106,9 +104,21 @@ class IntegrationSpec extends FunSpec {
                 .withData(""))
           }
 
-          expectResult(None) {
-            client.get("http://" + srv.address + "/not.found").andThen.asXml
+          val e = "Throw(com.evrone.http.restclient.impl.UnexpectedResponse: HTTP/1.1 404 Not Found)"
+          client.get("http://" + srv.address + "/not.found").andThen.asXml.toString should be (e)
+        }
+      }
+
+      it ("invalid data") {
+        withServer{ srv =>
+          srv.handle("/echo") { case (req,res) =>
+            (req.withMethod("GET"),
+             res.withCode(201)
+                .withData("<xml>1<xml>"))
           }
+
+          val e = "Throw(org.xml.sax.SAXParseException"
+          client.get("http://" + srv.address + "/echo").andThen.asXml.toString should startWith (e)
         }
       }
     }

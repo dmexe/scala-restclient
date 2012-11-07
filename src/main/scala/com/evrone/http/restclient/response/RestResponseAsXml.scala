@@ -1,13 +1,11 @@
 package com.evrone.http.restclient.response
 
+import com.twitter.util.Try
+
 trait RestResponseAsXml extends RestResponseBuilder {
-  def asXml: Option[xml.Elem] = {
+  def asXml: Try[xml.Elem] = {
     asString.flatMap { body =>
-      try {
-        Some(xml.XML.loadString(body))
-      } catch {
-        case e:org.xml.sax.SAXParseException => None
-      }
+      Try(xml.XML.loadString(body))
     }
   }
 }

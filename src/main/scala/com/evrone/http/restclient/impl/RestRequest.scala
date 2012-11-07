@@ -1,24 +1,25 @@
 package com.evrone.http.restclient.impl
 
 import com.evrone.http.restclient.response.RestResponseBuilder
+import com.twitter.util.{Try,Return,Throw}
 import org.apache.http.HttpResponse
 
 trait RestRequestAndThen { self: RestRequest =>
   def andThen = {
     maybeHttpResponse match {
-      case Right(x) => RestResponseBuilder.Success(x)
-      case Left(x)  => RestResponseBuilder.Fail(x)
+      case Return(x) => RestResponseBuilder.Success(Return(x))
+      case Throw(x)  => RestResponseBuilder.Success(Throw(x))
     }
   }
 
   def andThen[T](f: HttpResponse => Option[T]): Option[T] = {
     maybeHttpResponse match {
-      case Right(x) => f(x)
-      case Left(x)  => None
+      case Return(x) => f(x)
+      case Throw(x)  => None
     }
   }
 
-  private def maybeHttpResponse: Either[String,HttpResponse] = {
+  private def maybeHttpResponse: Try[HttpResponse] = {
     val httpReq = RestBuilder(self)
     RestExecutor.getResponse(client, httpReq)
   }
