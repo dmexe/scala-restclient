@@ -21,3 +21,45 @@ resolvers ++= Seq(
   )
 
 scalacOptions ++= Seq("-unchecked", "-deprecation")
+
+// disable using the Scala version in output paths and artifacts
+crossPaths := false
+
+publishMavenStyle := true
+
+publishTo <<= version { v: String =>
+  val nexus = "https://oss.sonatype.org/"
+  if (v.trim.endsWith("SNAPSHOT"))
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+
+publishMavenStyle := true
+
+publishArtifact in Test := false
+
+pomIncludeRepository := { _ => false }
+
+pomExtra := (
+  <url>http://github.com/dima-exe/scala-restclient</url>
+  <licenses>
+    <license>
+      <name>BSD-style</name>
+      <url>http://www.opensource.org/licenses/bsd-license.php</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <scm>
+    <url>git@github.com:dima-exe/scala-restclient.git</url>
+    <connection>scm:git:git@github.com:dima-exe/scala-restclient.git</connection>
+  </scm>
+  <developers>
+    <developer>
+      <id>dmexe</id>
+      <name>Dmitry Galinsky</name>
+      <url>http://evrone.com</url>
+    </developer>
+  </developers>
+)
+
