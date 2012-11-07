@@ -5,18 +5,10 @@ import com.twitter.util.{Try,Return,Throw}
 import org.apache.http.HttpResponse
 
 trait RestRequestAndThen { self: RestRequest =>
-  def andThen = {
-    maybeHttpResponse match {
-      case Return(x) => RestResponseBuilder.Success(Return(x))
-      case Throw(x)  => RestResponseBuilder.Success(Throw(x))
-    }
-  }
+  def andThen = RestResponseBuilder(maybeHttpResponse)
 
-  def andThen[T](f: HttpResponse => Option[T]): Option[T] = {
-    maybeHttpResponse match {
-      case Return(x) => f(x)
-      case Throw(x)  => None
-    }
+  def andThen[T](f: HttpResponse => Try[T]): Try[T] = {
+    maybeHttpResponse.flatMap(f(_))
   }
 
   private def maybeHttpResponse: Try[HttpResponse] = {

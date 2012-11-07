@@ -1,0 +1,13 @@
+   {
+     "name": "joe",
+     "addresses": {
+       "address1": {
+         "street": "Bulevard",
+         "city": "Helsinki"
+         },
+         "address2": {
+           "street": "Soho",
+           "city": "London"
+         }
+       }
+     }
