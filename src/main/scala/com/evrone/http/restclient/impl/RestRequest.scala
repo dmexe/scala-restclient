@@ -29,8 +29,8 @@ case class RestRequest(client:      com.evrone.http.RestClient,
                        queryString: Option[String]     = None,
                        headers:     Map[String,String] = Map(),
                        params:      Map[String,String] = Map(),
-                       basicAuth:   Option[Tuple2[String,String]] = None,
-                       postData:    Option[Tuple2[String,String]] = None,
+                       basicAuth:   Option[(String, String)] = None,
+                       postData:    Option[(String, String)] = None,
                        hasError:    Option[Throwable]             = None) extends RestRequestAndThen
                                                                              with RestRequestBodyAsJson[RestRequest] {
 

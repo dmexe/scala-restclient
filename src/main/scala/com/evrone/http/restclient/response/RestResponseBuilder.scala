@@ -16,7 +16,7 @@ case class RestResponseBuilder(httpResp: Try[HttpResponse])
 
   def asString = {
     httpResp.flatMap { resp =>
-      Utils.getString(resp)(Some(_)) match {
+      RestEntityUtils.getString(resp)(Some(_)) match {
         case Some(x:String) => Return[String](x)
         case None    => Throw[String](new HttpEntityDoesNotExists)
       }
@@ -25,7 +25,7 @@ case class RestResponseBuilder(httpResp: Try[HttpResponse])
 
   def asByteArray = {
     httpResp.flatMap { resp =>
-      Utils.getByteArray(resp)(Some(_)) match {
+      RestEntityUtils.getByteArray(resp)(Some(_)) match {
         case Some(x:Array[Byte]) => Return[Array[Byte]](x)
         case None    => Throw[Array[Byte]](new HttpEntityDoesNotExists)
       }

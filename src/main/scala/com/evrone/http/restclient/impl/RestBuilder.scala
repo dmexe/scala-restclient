@@ -22,7 +22,7 @@ object RestBuilder {
     for((k,v) <- req.headers) httpReq.addHeader(k,v)
 
     for(x <- req.basicAuth) {
-      req.client.httpClient.getCredentialsProvider().setCredentials(
+      req.client.httpClient.getCredentialsProvider.setCredentials(
         AuthScope.ANY,
         new UsernamePasswordCredentials(x._1, x._2))
     }
@@ -34,7 +34,7 @@ object RestBuilder {
 
   def POST(req: RestRequest) = {
     val post = new HttpPost(uri(req)) {
-      override def getMethod() = req.method
+      override def getMethod = req.method
     }
 
     for(x <- req.postData) {

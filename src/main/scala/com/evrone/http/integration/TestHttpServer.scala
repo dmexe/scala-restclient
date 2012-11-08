@@ -11,7 +11,7 @@ case class HandleRequest(method:        Option[List[String]]          = None,
                          params:        Option[String]                = None,
                          dataAsString:  Option[String]                = None,
                          queryString:   Option[String]                = None,
-                         basicAuth:     Option[Tuple2[String,String]] = None) {
+                         basicAuth:     Option[(String, String)] = None) {
   def withMethod(x: List[String])         = copy(method       = Some(x))
   def withMethod(x: String)               = copy(method       = Some(List(x)))
   def withHeader(x: Map[String,String])   = copy(headers      = Some(x))
@@ -45,7 +45,7 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
 
     rs match {
       case Right(_) => {
-        val headers = x.getResponseHeaders()
+        val headers = x.getResponseHeaders
         headers.add("Content-Type", res.contentType)
         for(value <- req.headers) {
           value.foreach((k) => headers.add(k._1,k._2))
@@ -60,19 +60,19 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
     if (code == 499) {
       log.warning(body)
     }
-    val os: OutputStream = x.getResponseBody()
+    val os: OutputStream = x.getResponseBody
     x.sendResponseHeaders(code, body.length)
-    os.write(body.getBytes())
+    os.write(body.getBytes)
     os.close()
   }
 
   private def reqMethod(x:HttpExchange): Either[String,Int] = {
     req.method match {
       case Some(m) => {
-        if(m.contains(x.getRequestMethod())) {
+        if(m.contains(x.getRequestMethod)) {
           Right(0)
         } else {
-          Left("Invalid request method: expected " + m + " got " + x.getRequestMethod())
+          Left("Invalid request method: expected " + m + " got " + x.getRequestMethod)
         }
       }
       case _ => Right(0)
@@ -82,7 +82,7 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
   private def reqHeaders(x:HttpExchange): Either[String,Int] = {
     req.headers match {
       case Some(h) => {
-        val headers = x.getRequestHeaders()
+        val headers = x.getRequestHeaders
         val exists = h.forall { (k) =>
           headers.containsKey(k._1) && headers.get(k._1).contains(k._2)
         }
@@ -113,7 +113,7 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
   private def reqQueryString(x:HttpExchange): Either[String,Int] = {
     req.queryString match {
       case Some(d) => {
-        val query = x.getRequestURI().getQuery()
+        val query = x.getRequestURI.getQuery
         if(query == d) {
           Right(0)
         } else {
@@ -125,8 +125,8 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
   }
 
   private def getBodyString(x:HttpExchange): String = {
-    val s = new java.util.Scanner(x.getRequestBody()).useDelimiter("\\A")
-    if(s.hasNext()) {
+    val s = new java.util.Scanner(x.getRequestBody).useDelimiter("\\A")
+    if(s.hasNext) {
       s.next()
     } else ""
   }
@@ -141,7 +141,7 @@ class TestHttpBasicAuthenticator(val name:String, val pass:String) extends Basic
 class TestHttpServer {
   val server = HttpServer.create(new InetSocketAddress(0), 0)
 
-  def handle(url:String)(f: Tuple2[HandleRequest,HandleResponse] => (HandleRequest, HandleResponse) ) = {
+  def handle(url:String)(f: ((HandleRequest, HandleResponse)) => (HandleRequest, HandleResponse) ) = {
     val reqAndRes = f(new HandleRequest, new HandleResponse)
 
     var context = server.createContext(url, new TestHttpHandler(reqAndRes._1, reqAndRes._2))
@@ -163,7 +163,9 @@ class TestHttpServer {
     server.start()
  }
 
-  def stop() = server.stop(0)
+  def stop() {
+    server.stop(0)
+  }
 
-  def address = "127.0.0.1:%s".format(server.getAddress().getPort())
+  def address = "127.0.0.1:%s".format(server.getAddress.getPort)
 }

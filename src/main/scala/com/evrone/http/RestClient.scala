@@ -30,13 +30,15 @@ case class RestClient(httpClient:  DefaultHttpClient = RestClient.defaultHttpCli
 }
 
 object RestClient {
-  lazy val connManager                   = new PoolingClientConnectionManager()
+  lazy val connManager = new PoolingClientConnectionManager()
 
-  def close() = connManager.shutdown()
+  def close() {
+    connManager.shutdown()
+  }
 
-  def stats = connManager.getTotalStats().toString()
+  def stats = connManager.getTotalStats.toString
 
   def defaultLogger(s:String) {}
-  def defaultHttpClient = new DefaultHttpClient(connManager)
+  def defaultHttpClient  = new DefaultHttpClient(connManager)
   def defaultHttpContext = new BasicHttpContext()
 }
