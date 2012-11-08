@@ -12,8 +12,13 @@ trait RestRequestAndThen { self: RestRequest =>
   }
 
   private def maybeHttpResponse: Try[HttpResponse] = {
-    val httpReq = RestBuilder(self)
-    RestExecutor.getResponse(client, httpReq)
+    hasError match {
+      case None => {
+        val httpReq = RestBuilder(self)
+        RestExecutor.getResponse(client, httpReq)
+      }
+      case Some(e) => Throw(e)
+    }
   }
 }
 
@@ -25,7 +30,9 @@ case class RestRequest(client:      com.evrone.http.RestClient,
                        headers:     Map[String,String] = Map(),
                        params:      Map[String,String] = Map(),
                        basicAuth:   Option[Tuple2[String,String]] = None,
-                       postData:    Option[Tuple2[String,String]] = None) extends RestRequestAndThen {
+                       postData:    Option[Tuple2[String,String]] = None,
+                       hasError:    Option[Throwable]             = None) extends RestRequestAndThen
+                                                                             with RestRequestBodyAsJson[RestRequest] {
 
   type Hash = Map[String,String]
 
@@ -46,4 +53,7 @@ case class RestRequest(client:      com.evrone.http.RestClient,
   def withData(data: String, contentType: String) = {
     copy(postData = Some(data, contentType))
   }
+
+  def resetData = copy(postData = None)
+  def setError(e: Throwable) = copy(hasError = Some(e))
 }

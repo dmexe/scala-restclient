@@ -4,9 +4,14 @@ import com.evrone.http.RestClient
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 
+case class Address(street: String)
+case class Phone(number:String, hours: Map[String,Int])
+case class Person(id: Long, firstName:String, lastName:String, addresses: List[Address], phones: List[Phone])
+
 class RestRequestSpec extends FunSpec {
 
-  val client = new RestClient()
+  val log = (s:String) => println(s)
+  val client = new RestClient(log)
   val req = RestRequest(client, "GET", "http://example.com")
   val map = Map("name" -> "value")
 
@@ -52,5 +57,29 @@ class RestRequestSpec extends FunSpec {
   it("use same instance of client") {
     val prevClient = req.client
     req.withQuery("q").client should be === (prevClient)
+  }
+
+  it("serialize object to json") {
+    val data = Map("a" -> "b", "c" -> 2, "d" -> List(1,3,4,5))
+    val json = """{"a":"b","c":2,"d":[1,3,4,5]}"""
+    req.withJson(data).postData.get._1 should be (json)
+    req.withJson(data).postData.get._2 should be ("application/json")
+  }
+
+  it("serialize object to json (case class)") {
+    val addr = Address("street")
+    val phone = Phone("12718273", Map("2" -> 8))
+    val person = Person(1, "first", "last", List(addr), List(phone))
+
+    val json = """{"id":1,"firstName":"first","lastName":"last","addresses":[{"street":"street"}],"phones":[{"number":"12718273","hours":{"2":8}}]}"""
+    req.withJson(person).postData.get._1 should be (json)
+    req.withJson(person).postData.get._2 should be ("application/json")
+  }
+
+  it("fail to searialize object to json") {
+    val hash = Map(1 -> "2")
+    val e = """RestResponseBuilder(Throw(scala.MatchError"""
+    req.withJson(hash).postData should be (None)
+    req.withJson(hash).andThen.toString should startWith (e)
   }
 }
