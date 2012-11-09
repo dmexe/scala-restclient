@@ -1,13 +1,13 @@
-package com.evrone.http.restclient.response
+package com.evrone.http.response.format
 
 import com.twitter.util.Try
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import org.apache.http.HttpResponse
 
-object RestJsonNodeResponse extends RestResponse {
+object asJsonNode extends (HttpResponse => Try[JsonNode]) with RestResponse {
   lazy val mapper = new ObjectMapper
 
-  def asJsonNode(resp: HttpResponse): Try[JsonNode] = {
+  def apply(resp: HttpResponse): Try[JsonNode] = {
     Try(mapper.readTree(getEntityString(resp)))
   }
 }

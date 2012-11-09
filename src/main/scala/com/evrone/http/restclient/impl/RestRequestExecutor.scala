@@ -16,8 +16,8 @@ class RestRequestExecutor(restReq: RestRequestBuilder) {
     }
   }
 
-  def andThen = execute _
-
+  @inline
+  def andThen[T](f: HttpResponse => Try[T]): Try[T] = execute[T](f)
 }
 
 

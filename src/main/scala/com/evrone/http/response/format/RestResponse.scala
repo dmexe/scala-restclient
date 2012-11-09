@@ -1,10 +1,18 @@
-package com.evrone.http.restclient.response
+package com.evrone.http.response.format
 
 import org.apache.http.util.EntityUtils
 import org.apache.http.{HttpEntity, HttpResponse}
 
 trait RestResponse {
 
+  @inline
+  def getEntityString(resp: HttpResponse): String = {
+    getEntity(resp) { e =>
+      e.map(EntityUtils.toString(_, "UTF-8")) getOrElse ""
+    }
+  }
+
+  @inline
   protected def getEntity[T](resp: HttpResponse)(f: Option[HttpEntity] => T): T = {
     resp.getEntity match {
       case e:HttpEntity => {
@@ -16,9 +24,4 @@ trait RestResponse {
     }
   }
 
-  protected def getEntityString(resp: HttpResponse): String = {
-    getEntity(resp) { e =>
-      e.map(EntityUtils.toString(_, "UTF-8")) getOrElse ""
-    }
-  }
 }

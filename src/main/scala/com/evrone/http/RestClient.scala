@@ -5,9 +5,9 @@ import org.apache.http.impl.conn.PoolingClientConnectionManager
 import org.apache.http.protocol.BasicHttpContext
 import com.evrone.http.restclient.request.RestRequestBuilder
 
-case class RestClient(httpClient:  DefaultHttpClient = RestClient.defaultHttpClient,
-                      httpContext: BasicHttpContext  = RestClient.defaultHttpContext,
-                      log:         (String => Any)   = RestClient.defaultLogger) {
+class RestClient(val httpClient:  DefaultHttpClient = RestClient.defaultHttpClient,
+                 val httpContext: BasicHttpContext  = RestClient.defaultHttpContext,
+                 val log:         (String => Any)   = RestClient.defaultLogger) {
 
   def this(log: String => Any) = {
     this(RestClient.defaultHttpClient, RestClient.defaultHttpContext, log)
@@ -41,4 +41,17 @@ object RestClient {
   def defaultLogger(s:String) {}
   def defaultHttpClient  = new DefaultHttpClient(connManager)
   def defaultHttpContext = new BasicHttpContext()
+}
+
+package object restclient {
+  import com.evrone.http.restclient.impl.RestRequestExecutor
+  import com.evrone.http.restclient.response._
+  import com.twitter.util.Try
+  import org.apache.http.HttpResponse
+
+  type RestClient = com.evrone.http.RestClient
+
+  implicit def RestRequestToHttpRequest(restReq: RestRequestBuilder) = {
+    new RestRequestExecutor(restReq)
+  }
 }

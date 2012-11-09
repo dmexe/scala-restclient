@@ -1,23 +1,27 @@
-package com.evrone.http
+package com.evrone.integration.restclient.example
 
 import com.twitter.util.{Try,Return,Throw}
 import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 
+import com.evrone.http.RestClient
+import com.evrone.http.response.format._
+import com.evrone.http.integration.TestHttpServer
 
-/*
-class IntegrationSpec extends FunSpec {
-
-  def withServer(test: integration.TestHttpServer => Any) {
-    val server = new integration.TestHttpServer
+trait IntegrationSpecHelper {this: FunSpec =>
+  def withServer(f: TestHttpServer => Any) {
+    val server = new TestHttpServer
     server.start()
-    test(server)
+    f(server)
     server.stop()
   }
+}
+
+class IntegrationSpec extends FunSpec with IntegrationSpecHelper {
 
   describe("make a json PUT request") {
-    val client = new RestClient
+    val client = new RestClient((v:String) => println(v))
 
     it("a successfuly") {
       val x = """{"a":1,"b":"2"}"""
@@ -38,7 +42,7 @@ class IntegrationSpec extends FunSpec {
           client.put("http://" + srv.address + "/echo")
                 .withParam("foo","bar")
                 .withAccept("application/xml")
-                .withBasicAuth("user", "pass").andThen.asJsonNode
+                .withBasicAuth("user", "pass") andThen asJsonNode
         }
       }
     }
@@ -65,7 +69,7 @@ class IntegrationSpec extends FunSpec {
           client.get("http://" + srv.address + "/echo")
                 .withQuery("foo", "bar")
                 .withAccept("application/xml")
-                .withBasicAuth("user", "pass").andThen.asXml
+                .withBasicAuth("user", "pass") andThen asXml
         }
       }
     }
@@ -80,8 +84,8 @@ class IntegrationSpec extends FunSpec {
                 .withData(""))
           }
 
-          val e = "Throw(com.evrone.http.restclient.response.HttpEntityDoesNotExists: HttpEntity does not exists)"
-          client.get("http://" + srv.address + "/echo").andThen.asXml.toString should be (e)
+          val e = "Throw(org.xml.sax.SAXParseException:"
+          (client.get("http://" + srv.address + "/echo") andThen asXml).toString should startWith (e)
         }
       }
 
@@ -92,8 +96,8 @@ class IntegrationSpec extends FunSpec {
                 .withBasicAuth("u", "p"),
              res)
           }
-          val e = "Throw(com.evrone.http.restclient.impl.UnexpectedResponse: HTTP/1.1 401 Unauthorized)"
-          client.get("http://" + srv.address + "/echo").andThen.asXml.toString should be (e)
+          val e = "Throw(com.evrone.http.restclient.impl.UnexpectedHttpResponse: HTTP/1.1 401 Unauthorized)"
+          (client.get("http://" + srv.address + "/echo") andThen asXml).toString should be (e)
         }
       }
 
@@ -105,8 +109,8 @@ class IntegrationSpec extends FunSpec {
                 .withData(""))
           }
 
-          val e = "Throw(com.evrone.http.restclient.impl.UnexpectedResponse: HTTP/1.1 404 Not Found)"
-          client.get("http://" + srv.address + "/not.found").andThen.asXml.toString should be (e)
+          val e = "Throw(com.evrone.http.restclient.impl.UnexpectedHttpResponse: HTTP/1.1 404 Not Found)"
+          (client.get("http://" + srv.address + "/not.found") andThen asXml).toString should be (e)
         }
       }
 
@@ -119,11 +123,9 @@ class IntegrationSpec extends FunSpec {
           }
 
           val e = "Throw(org.xml.sax.SAXParseException"
-          client.get("http://" + srv.address + "/echo").andThen.asXml.toString should startWith (e)
+          (client.get("http://" + srv.address + "/echo") andThen asXml).toString should startWith (e)
         }
       }
     }
   }
 }
-
-*/
