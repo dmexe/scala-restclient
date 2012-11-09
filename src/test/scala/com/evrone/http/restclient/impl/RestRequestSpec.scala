@@ -12,7 +12,7 @@ class RestRequestSpec extends FunSpec {
 
   val log = (s:String) => println(s)
   val client = new RestClient(log)
-  val req = RestRequest(client, "GET", "http://example.com")
+  val req = RestRequestBuilder(client, "GET", "http://example.com")
   val map = Map("name" -> "value")
 
   it("add a query from Map") {
@@ -51,7 +51,7 @@ class RestRequestSpec extends FunSpec {
 
   it("add a raw post data") {
     val q = ("data", "content-type")
-    req.withData(q._1, q._2).postData.get should be (q)
+    req.withData(q._1, q._2).postDataAsString.get should be (q)
   }
 
   it("use same instance of client") {
@@ -62,8 +62,8 @@ class RestRequestSpec extends FunSpec {
   it("serialize object to json") {
     val data = Map("a" -> "b", "c" -> 2, "d" -> List(1,3,4,5))
     val json = """{"a":"b","c":2,"d":[1,3,4,5]}"""
-    req.withJson(data).postData.get._1 should be (json)
-    req.withJson(data).postData.get._2 should be ("application/json")
+    req.withJson(data).postDataAsString.get._1 should be (json)
+    req.withJson(data).postDataAsString.get._2 should be ("application/json")
   }
 
   it("serialize object to json (case class)") {
@@ -72,14 +72,14 @@ class RestRequestSpec extends FunSpec {
     val person = Person(1, "first", "last", List(addr), List(phone))
 
     val json = """{"id":1,"firstName":"first","lastName":"last","addresses":[{"street":"street"}],"phones":[{"number":"12718273","hours":{"2":8}}]}"""
-    req.withJson(person).postData.get._1 should be (json)
-    req.withJson(person).postData.get._2 should be ("application/json")
+    req.withJson(person).postDataAsString.get._1 should be (json)
+    req.withJson(person).postDataAsString.get._2 should be ("application/json")
   }
 
   it("fail to searialize object to json") {
     val hash = Map(1 -> "2")
     val e = """RestResponseBuilder(Throw(scala.MatchError"""
-    req.withJson(hash).postData should be (None)
+    req.withJson(hash).postDataAsString should be (None)
     req.withJson(hash).andThen.toString should startWith (e)
   }
 }

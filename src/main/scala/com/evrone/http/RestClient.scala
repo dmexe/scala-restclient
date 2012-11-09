@@ -1,9 +1,9 @@
 package com.evrone.http
 
-import com.evrone.http.restclient.impl.RestRequest
 import org.apache.http.impl.client.DefaultHttpClient
 import org.apache.http.impl.conn.PoolingClientConnectionManager
 import org.apache.http.protocol.BasicHttpContext
+import com.evrone.http.restclient.request.RestRequestBuilder
 
 case class RestClient(httpClient:  DefaultHttpClient = RestClient.defaultHttpClient,
                       httpContext: BasicHttpContext  = RestClient.defaultHttpContext,
@@ -24,8 +24,8 @@ case class RestClient(httpClient:  DefaultHttpClient = RestClient.defaultHttpCli
   def patch (url: String) = build("PATCH",  url)
   def delete(url: String) = build("DELETE", url)
 
-  def build(method: String, url: String): RestRequest = {
-    RestRequest(this, method, url)
+  def build(method: String, url: String): RestRequestBuilder = {
+    RestRequestBuilder(this, method, url)
   }
 }
 

@@ -1,11 +1,10 @@
 package com.evrone.http.restclient.response
 
 import com.twitter.util.Try
+import org.apache.http.HttpResponse
 
-trait RestResponseAsXml extends RestResponseBuilderBase {
-  def asXml: Try[xml.Elem] = {
-    asString.flatMap { body =>
-      Try(xml.XML.loadString(body))
-    }
+object RestResponseAsXml extends RestResponse {
+  def asXml(resp: HttpResponse): Try[xml.Elem] = {
+    Try(xml.XML.loadString(getEntityString(resp)))
   }
 }

@@ -1,22 +1,13 @@
 package com.evrone.http.restclient.response
 
 import com.twitter.util.Try
-import com.fasterxml.jackson.core.JsonParseException
-import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper,JsonMappingException}
+import com.fasterxml.jackson.databind.{JsonNode,ObjectMapper}
+import org.apache.http.HttpResponse
 
-trait RestResponseAsJsonNode extends RestResponseBuilderBase {
-  def asJsonNode: Try[JsonNode] = {
-    asString.flatMap { body =>
-        Try(RestResponseAsJsonNode.mapper.readTree(body))
-    }
+object RestResponseAsJsonNode extends RestResponse {
+  lazy val mapper = new ObjectMapper
+
+  def asJsonNode(resp: HttpResponse): Try[JsonNode] = {
+    Try(RestResponseAsJsonNode.mapper.readTree(getEntityString(resp)))
   }
 }
-
-object RestResponseAsJsonNode {
-  lazy val mapper = new ObjectMapper
-}
-
-/*
-case e:JsonMappingException => None
-case e:JsonParseException => None
-*/
