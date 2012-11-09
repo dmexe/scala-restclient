@@ -5,7 +5,7 @@ import org.json4s._
 import org.json4s.jackson.JsonMethods._
 import org.apache.http.HttpResponse
 
-object RestResponseAsJson extends RestResponse {
+object RestJsonReponse extends RestResponse {
   def asJson(resp: HttpResponse): Try[JValue] = {
     Try(parse(getEntityString(resp)))
   }
