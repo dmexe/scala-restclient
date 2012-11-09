@@ -6,6 +6,7 @@ import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
 
 
+/*
 class IntegrationSpec extends FunSpec {
 
   def withServer(test: integration.TestHttpServer => Any) {
@@ -124,3 +125,5 @@ class IntegrationSpec extends FunSpec {
     }
   }
 }
+
+*/

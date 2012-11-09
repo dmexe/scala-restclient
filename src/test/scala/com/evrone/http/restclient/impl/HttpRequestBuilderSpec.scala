@@ -1,52 +1,19 @@
 package com.evrone.http.restclient.impl
 
-import com.evrone.http.RestClient
 import org.apache.http.client.methods.{HttpGet,HttpHead,HttpPost,HttpRequestBase}
-import org.apache.http.HttpEntityEnclosingRequest
-import org.apache.http.util.EntityUtils
 import org.scalatest._
 import org.scalatest.matchers.ShouldMatchers._
+import org.apache.http.HttpEntityEnclosingRequest
 import org.apache.http.auth.AuthScope
+import com.evrone.http.RestClient
 import com.evrone.http.restclient.request.RestRequestBuilder
 
 trait RestRequestBehaviors { this: FunSpec =>
   val client = new RestClient
-
-  def queryString(http: RestRequestBuilder => HttpRequestBase, req: RestRequestBuilder) {
-    it("assign queryString") {
-      val q = req.withQuery("a=1")
-      http(q).getURI.toASCIIString should be ("http://example.com?a=1")
-      http(q.withQuery("b", "2")).getURI.toASCIIString should be ("http://example.com?a=1&b=2")
-      info("and queryParams")
-    }
-  }
-
-  def postData(http: RestRequestBuilder =>  HttpEntityEnclosingRequest, req: RestRequestBuilder) {
-    it("assign postDataAsString") {
-      val e = http(req).getEntity
-      EntityUtils.toString(e) should be ("data")
-      EntityUtils.consume(e)
-
-      e.getContentType().getValue() should be ("contentType")
-      info("and postDataAsString content type")
-    }
-  }
-
-  def formParams(http: RestRequestBuilder =>  HttpEntityEnclosingRequest, req: RestRequestBuilder) {
-    it("assign form params") {
-      val q = req.withParam("name", "value")
-      val e = http(q).getEntity
-
-      EntityUtils.toString(e) should be ("name=value")
-      EntityUtils.consume(e)
-
-      e.getContentType().getValue() should be ("application/x-www-form-urlencoded; charset=UTF-8")
-      info("and params content type")
-    }
-  }
 }
 
-class RestBuilderSpec extends FunSpec with RestRequestBehaviors {
+/*
+class HttpRequestBuilderSpec extends FunSpec with RestRequestBehaviors {
 
   val req = RestRequestBuilder(client, "GET", "http://example.com")
 
@@ -120,3 +87,4 @@ class RestBuilderSpec extends FunSpec with RestRequestBehaviors {
     it should behave like formParams(put, q)
   }
 }
+*/

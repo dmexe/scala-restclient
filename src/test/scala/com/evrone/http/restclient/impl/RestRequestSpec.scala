@@ -8,6 +8,7 @@ case class Address(street: String)
 case class Phone(number:String, hours: Map[String,Int])
 case class Person(id: Long, firstName:String, lastName:String, addresses: List[Address], phones: List[Phone])
 
+/*
 class RestRequestSpec extends FunSpec {
 
   val log = (s:String) => println(s)
@@ -83,3 +84,4 @@ class RestRequestSpec extends FunSpec {
     req.withJson(hash).andThen.toString should startWith (e)
   }
 }
+*/

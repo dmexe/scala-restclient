@@ -33,5 +33,4 @@ case class RestRequestBuilder(client:           com.evrone.http.RestClient,
   }
 
   protected def setError(e: Throwable) = copy(hasError = Some(e))
-
 }

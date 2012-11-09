@@ -2,7 +2,7 @@ package com.evrone.http.restclient.impl
 
 import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.HttpResponse
-import com.twitter.util.Try
+import com.twitter.util.{Try,Throw,Return}
 import com.evrone.http.RestClient
 
 object HttpRequestExecutor {
@@ -12,11 +12,11 @@ object HttpRequestExecutor {
 
     Try {
       client.httpClient.execute(httpReq, client.httpContext)
-    } map { httpRes =>
+    } flatMap { httpRes =>
       client.log(httpRes.getStatusLine.toString)
       httpRes.getStatusLine.getStatusCode match {
-        case ok if 200 until 299 contains ok => httpRes
-        case _ => throw new UnexpectedHttpResponse(httpRes.getStatusLine.toString)
+        case ok if 200 until 299 contains ok => Return(httpRes)
+        case _ => Throw[HttpResponse](new UnexpectedHttpResponse(httpRes.getStatusLine.toString))
       }
     }
   }
