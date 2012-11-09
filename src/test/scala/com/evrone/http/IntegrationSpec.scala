@@ -79,7 +79,7 @@ class IntegrationSpec extends FunSpec with IntegrationSpecHelper {
             res.withCode(204)
                .withData("")}
 
-          val e = "Throw(org.xml.sax.SAXParseException:"
+          val e = "Throw(org.xml.sax.SAXParseException"
           (client.get("http://" + srv.address + "/echo") andThen asXml).toString should startWith (e)
         }
       }
