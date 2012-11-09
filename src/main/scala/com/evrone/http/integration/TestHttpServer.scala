@@ -141,7 +141,7 @@ class TestHttpBasicAuthenticator(val name:String, val pass:String) extends Basic
 class TestHttpServer {
   val server = HttpServer.create(new InetSocketAddress(0), 0)
 
-  def handle(url:String)(f: Tuple2[HandleRequest, HandleResponse] => Tuple2[HandleRequest, HandleResponse] ) = {
+  def handle(url:String)(f: (HandleRequest, HandleResponse) => Tuple2[HandleRequest, HandleResponse] ) = {
     val reqAndRes = f(new HandleRequest, new HandleResponse)
 
     var context = server.createContext(url, new TestHttpHandler(reqAndRes._1, reqAndRes._2))
