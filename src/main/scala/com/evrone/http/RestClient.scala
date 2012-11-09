@@ -45,7 +45,6 @@ object RestClient {
 
 package object restclient {
   import com.evrone.http.restclient.impl.RestRequestExecutor
-  import com.evrone.http.restclient.response._
   import com.twitter.util.Try
   import org.apache.http.HttpResponse
 
