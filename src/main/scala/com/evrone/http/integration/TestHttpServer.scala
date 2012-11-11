@@ -14,11 +14,12 @@ case class HandleRequest(method:        Option[List[String]]          = None,
                          basicAuth:     Option[(String, String)] = None) {
   def withMethod(x: List[String])         = copy(method       = Some(x))
   def withMethod(x: String)               = copy(method       = Some(List(x)))
-  def withHeader(x: Map[String,String])   = copy(headers      = Some(x))
-  def withHeader(n: String, v :String)    = copy(headers      = Some(Map(n -> v)))
+  def withHeader(x: Map[String,String])   = copy(headers      = headers.map(h => h ++ x).orElse(Some(x)))
+  def withHeader(n: String, v :String)    = copy(headers      = headers.map(h => h ++ Map(n -> v)).orElse(Some(Map(n -> v))))
   def withParam(x: String)                = copy(params       = Some(x))
   def withQueryString(x :String)          = copy(queryString  = Some(x))
   def withBasicAuth(u :String, p :String) = copy(basicAuth    = Some(Tuple2(u,p)))
+  def withData(s: String)                 = copy(dataAsString = Some(s))
 }
 
 case class HandleResponse(dataAsString: String             = "",
@@ -28,8 +29,8 @@ case class HandleResponse(dataAsString: String             = "",
   def withData(x: String)               = copy(dataAsString = x)
   def withCode(x: Int)                  = copy(code = x)
   def withContentType(x: String)        = copy(contentType = x)
-  def withHeader(x: Map[String,String]) = copy(headers = x)
-  def withHeader(n :String, v:String)   = copy(headers = Map(n -> v))
+  def withHeader(x: Map[String,String]) = copy(headers = headers ++ x)
+  def withHeader(n :String, v:String)   = copy(headers = headers ++ Map(n -> v))
 }
 
 class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends HttpHandler {
@@ -47,8 +48,8 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
       case Right(_) => {
         val headers = x.getResponseHeaders
         headers.add("Content-Type", res.contentType)
-        for(value <- req.headers) {
-          value.foreach((k) => headers.add(k._1,k._2))
+        for(k <- res.headers) {
+          headers.add(k._1,k._2)
         }
         response(x, res.code, res.dataAsString)
       }
@@ -127,7 +128,7 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
   private def getBodyString(x:HttpExchange): String = {
     val s = new java.util.Scanner(x.getRequestBody).useDelimiter("\\A")
     if(s.hasNext) {
-      s.next()
+      s.next().trim()
     } else ""
   }
 }

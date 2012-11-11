@@ -16,7 +16,7 @@ object HttpRequestExecutor {
       client.log(httpRes.getStatusLine.toString)
       httpRes.getStatusLine.getStatusCode match {
         case ok if 200 until 299 contains ok => Return(httpRes)
-        case _ => Throw[HttpResponse](new UnexpectedHttpResponse(httpRes.getStatusLine.toString))
+        case _ => Throw(UnexpectedHttpResponse(httpRes.getStatusLine.toString))
       }
     }
   }
