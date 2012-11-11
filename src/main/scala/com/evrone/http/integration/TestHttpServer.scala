@@ -118,7 +118,7 @@ class TestHttpHandler(val req: HandleRequest, val res: HandleResponse) extends H
         if(query == d) {
           Right(0)
         } else {
-          Left("Invalid body: expected [" + d + "] got [" + query + "]")
+          Left("Invalid query: expected [" + d + "] got [" + query + "]")
         }
       }
       case _ => Right(0)
